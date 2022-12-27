@@ -1,7 +1,6 @@
 import telebot
 from random import choice
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import re
 
 token = ''
@@ -9,7 +8,7 @@ bot = telebot.TeleBot(token)
 HELP = '''/help - вывести список доступных команд
 /add - добавить новую задачу в список в формате "/add - дата - задача"
 /show - напечатать все добавленные задачи на заданную дату в формате "/show - дата"
-/random - добавлять случайную задачу на сегодняшнюю дату'''
+/random - добавить случайную задачу на сегодняшнюю дату'''
 tasks = {}
 RANDOM_TASKS = ["заказать еду", "посмотреть фильм", "почитать книгу", "сходить в ресторан", 'встретиться с друзьями',
                 'завести кошку', 'завести собаку', 'выпить шампанского', 'разобрать шкаф', 'сходить на шоппинг',
@@ -46,17 +45,20 @@ def reference(message):
 @bot.message_handler(commands=['add'])
 def add(message):
     command = message.text.split(' - ', maxsplit=2)
-    date = command[1].lower()
-    if date == 'сегодня':
-        date = str(datetime.today().date())
-    elif date == 'завтра':
-        date = str(datetime.today().date() + timedelta(1))
-    else:
-        date = date_processing(date)
-    task = command[2]
-    add_todo(date, task)
-    text = 'Задача ' + task + ' добавлена на дату ' + date
-    bot.send_message(message.chat.id, text)
+    try:
+        date = command[1].lower()
+        if date == 'сегодня':
+            date = str(datetime.today().date())
+        elif date == 'завтра':
+            date = str(datetime.today().date() + timedelta(1))
+        else:
+            date = date_processing(date)
+        task = command[2]
+        add_todo(date, task)
+        text = 'Задача ' + task + ' добавлена на дату ' + date
+        bot.send_message(message.chat.id, text)
+    except IndexError:
+        bot.send_message(message.chat.id, 'Введите команду в верном формате "/add - дата - задача"')
 
 
 @bot.message_handler(commands=['random'])
@@ -71,20 +73,23 @@ def random(message):
 @bot.message_handler(commands=['show'])
 def show(message):
     command = message.text.split(' - ', maxsplit=1)
-    date = command[1].lower()
-    if date == 'сегодня':
-        date = str(datetime.today().date())
-    elif date == 'завтра':
-        date = str(datetime.today().date() + timedelta(1))
-    else:
-        date = date_processing(date)
-    if date in tasks:
-        text = date.upper() + '\n'
-        for task in tasks[date]:
-            text = text + '- ' + task + '\n'
-    else:
-        text = 'На данную дату нет доступных задач'
-    bot.send_message(message.chat.id, text)
+    try:
+        date = command[1].lower()
+        if date == 'сегодня':
+            date = str(datetime.today().date())
+        elif date == 'завтра':
+            date = str(datetime.today().date() + timedelta(1))
+        else:
+            date = date_processing(date)
+        if date in tasks:
+            text = date.upper() + '\n'
+            for task in tasks[date]:
+                text = text + '- ' + task + '\n'
+        else:
+            text = 'На данную дату нет доступных задач'
+        bot.send_message(message.chat.id, text)
+    except IndexError:
+        bot.send_message(message.chat.id, 'Введите команду в верном формате "/show - дата"')
 
 
 bot.polling(none_stop=True)
