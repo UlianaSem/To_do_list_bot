@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "to-do list telegram bot"
+version = "0.1.0"
+description = "Telegram bot for scheduling tasks"
+authors = ["Uliana Semyonova <i@ulianasemyonova.ru>"]
+readme = "README.md"
+packages = [{include = "to_do list telegram bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
