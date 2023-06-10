@@ -33,10 +33,7 @@ def add_todo(path, date, task):
     :param date: дата для установки задачи
     :param task: задача
     """
-    with open(path, 'r', encoding='utf-8') as tasks_file:
-        tasks_text = tasks_file.read()
-
-    tasks = json.loads(tasks_text)
+    tasks = open_file_with_tasks(path)
 
     if date in tasks:
         tasks[date].append(task)
@@ -48,3 +45,17 @@ def add_todo(path, date, task):
 
     with open(path, 'w', encoding='utf-8') as tasks_file:
         tasks_file.write(tasks_text)
+
+
+def open_file_with_tasks(path):
+    """
+    Открывает и возвращает словарь со списком дел
+    :param path: путь к файлу с задачами
+    :return: словарь со списком дел
+    """
+    with open(path, 'r', encoding='utf-8') as tasks_file:
+        tasks_text = tasks_file.read()
+
+    tasks = json.loads(tasks_text)
+
+    return tasks
